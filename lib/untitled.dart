@@ -1,5 +1,4 @@
 
-import 'dart:async';
 
 import 'package:flutter/services.dart';
 
@@ -12,7 +11,5 @@ class Untitled {
     return version;
   }
   
-  static Future<void> toast(String message) async{ 
-    await _channel.invokeMethod("getToast",{"msg":message});
-  }
+
 }

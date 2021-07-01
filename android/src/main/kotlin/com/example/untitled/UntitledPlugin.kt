@@ -14,7 +14,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /** UntitledPlugin */
-class UntitledPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
+class UntitledPlugin: FlutterPlugin, MethodCallHandler {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
