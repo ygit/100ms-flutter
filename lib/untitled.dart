@@ -11,5 +11,11 @@ class Untitled {
     return version;
   }
   
+  static void joinMeet(String userName,String tokenKey) async{
+    await _channel.invokeMethod('joinMeet',{"userName":userName,"tokenID":tokenKey});
+  }
 
+  static void leave() async{
+    await _channel.invokeMethod('leave');
+  }
 }

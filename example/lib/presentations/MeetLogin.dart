@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:untitled/untitled.dart';
 
 
 class MeetLogIn extends StatefulWidget {
@@ -12,6 +13,35 @@ class MeetLogIn extends StatefulWidget {
 }
 
 class _MeetLogInState extends State<MeetLogIn> {
+
+  Future<String> popUp(BuildContext context) {
+    TextEditingController textEditingController = TextEditingController();
+
+    return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text("Enter Your Name"),
+          content: TextField(
+            controller: textEditingController,
+          ),
+          actions: [
+            FlatButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: Text("Cancel")),
+            FlatButton(
+                onPressed: () {
+                  Navigator.of(ctx)
+                      .pop(textEditingController.text.toString());
+                },
+                child: Text("Join"))
+          ],
+
+        ));
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +78,13 @@ class _MeetLogInState extends State<MeetLogIn> {
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(hintText: "Enter Meeting ID"),
               ),
-              FlatButton(onPressed: () {}, child:
+              FlatButton(onPressed: () {
+                popUp(context).then((value) => {
+                  if(value!=null){
+                    Untitled.joinMeet(value, "key")
+                  }
+                });
+              }, child:
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
