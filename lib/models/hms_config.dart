@@ -13,4 +13,14 @@ class HMSConfig {
       required this.roomId,
       required this.authToken,
       this.metaData=""});
+
+  Map<String,dynamic> toMap(){
+    return {
+      "userName":userName,
+      "userId":userId,
+      "roomId":roomId,
+      "authToken":authToken,
+      "metaData":metaData
+    };
+  }
 }
