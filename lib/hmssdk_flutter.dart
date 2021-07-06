@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:ffi';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:hmssdk_flutter/models/hms_config.dart';
 
@@ -11,14 +12,16 @@ class HmssdkFlutter {
 
   static Future<String?> get platformVersion async {
     final String? version = await _channel.invokeMethod('getPlatformVersion');
+
     return version;
   }
 
-  static Future<Void?> joinMeeting(HMSConfig hmsConfig) async{
+  Future<Void?> joinMeeting1(HMSConfig hmsConfig) async{
+    debugPrint("ass");
     await _channel.invokeMethod('joinMeeting',hmsConfig.toMap());
   }
 
-  static Future<Void?> leaveMeeting() async{
+  Future<Void?> leaveMeeting() async{
     await _channel.invokeMethod('leaveMeeting');
   }
 }

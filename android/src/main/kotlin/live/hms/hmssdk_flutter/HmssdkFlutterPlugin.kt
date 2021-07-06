@@ -2,7 +2,7 @@ package live.hms.hmssdk_flutter
 
 import android.app.Activity
 import androidx.annotation.NonNull
-
+import io.flutter.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -28,7 +28,7 @@ import kotlin.collections.*
 
 
 /** HmssdkFlutterPlugin */
-class HmssdkFlutterPlugin: FlutterPlugin, MethodCallHandler, HMSUpdateListener,ActivityAware {
+class HmssdkFlutterPlugin: FlutterPlugin, MethodCallHandler,ActivityAware  {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -40,6 +40,10 @@ class HmssdkFlutterPlugin: FlutterPlugin, MethodCallHandler, HMSUpdateListener,A
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "hmssdk_flutter")
     channel.setMethodCallHandler(this)
+  }
+
+  override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+    channel.setMethodCallHandler(null)
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -57,52 +61,76 @@ class HmssdkFlutterPlugin: FlutterPlugin, MethodCallHandler, HMSUpdateListener,A
     }
   }
 
-  override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-    channel.setMethodCallHandler(null)
+  fun hmsListener():HMSUpdateListener{
+    return object: HMSUpdateListener{
+
+      override fun onJoin(room: HMSRoom) {
+        // This will be called on a successful JOIN of the room by the user
+        // This is the point where applications can stop showing its loading state
+      }
+
+      override fun onPeerUpdate(type: HMSPeerUpdate, peer: HMSPeer) {
+        // This will be called whenever there is an update on an existing peer
+        // or a new peer got added/existing peer is removed.
+        // This callback can be used to keep a track of all the peers in the room
+      }
+
+      override fun onRoomUpdate(type: HMSRoomUpdate, hmsRoom: HMSRoom) {
+        // This is called when there is a change in any property of the Room
+      }
+
+      override fun onTrackUpdate(type: HMSTrackUpdate, track: HMSTrack, peer: HMSPeer) {
+        // This is called when there are updates on an existing track
+        // or a new track got added/existing track is removed
+        // This callback can be used to render the video on screen whenever a track gets added
+      }
+
+      override fun onMessageReceived(message: HMSMessage) {
+        // This is called when there is a new broadcast message from any other peer in the room
+        // This can be used to implement chat is the room
+      }
+
+      override fun onError(error: HMSException) {
+        // This will be called when there is an error in the system
+        // and SDK has already retried to fix the error
+      }
+
+      override fun onReconnecting(error: HMSException) {
+        // This is called when connection reestablishment starts
+        // This can be used to show a loading notification in the UI
+        // Parameter error: the error from the action that failed and caused the connection reestablishment
+      }
+
+      override fun onReconnected() {
+        // This is called when the connection reestablishment completed susccessfully
+      }
+
+    }
   }
 
-  override fun onError(error: HMSException) {
-    TODO("Not yet implemented")
-  }
 
-  override fun onJoin(room: HMSRoom) {
-    TODO("Not yet implemented")
-  }
-
-  override fun onMessageReceived(message: HMSMessage) {
-    TODO("Not yet implemented")
-  }
-
-  override fun onPeerUpdate(type: HMSPeerUpdate, peer: HMSPeer) {
-    TODO("Not yet implemented")
-  }
-
-  override fun onRoomUpdate(type: HMSRoomUpdate, hmsRoom: HMSRoom) {
-    TODO("Not yet implemented")
-  }
-
-  override fun onTrackUpdate(type: HMSTrackUpdate, track: HMSTrack, peer: HMSPeer) {
-    TODO("Not yet implemented")
-  }
-
-
-  fun joinMeeting(call: MethodCall){
+  fun joinMeeting(@NonNull call: MethodCall){
     val userName=call.argument<String>("userName")
     val authToken= call.argument<String>("authToken")
     val shouldSkipPiiEvents=call.argument<Boolean>("shouldSkipPiiEvents")
+    Log.i("userName",authToken!!)
     val hmsConfig=HMSConfig(userName = userName!!,authtoken = authToken!!)
-    hmssdk=HMSSDK.Builder(activity).shouldSkipPIIEvents(shouldSkipPiiEvents!!).build()
-    hmssdk.join(hmsConfig,this)
+ //   val hmssdk1=HMSSDK.Builder(activity).shouldSkipPIIEvents(shouldSkipPiiEvents!!).build()
+    val hmsUpdateListener=hmsListener()
+    hmssdk.join(hmsConfig,hmsUpdateListener)
   }
 
   fun leaveMeeting(){
-    hmssdk.leave()
+    if (hmssdk!=null)
+      hmssdk.leave()
+    else
+      Log.e("error","not initialized")
   }
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
 
     activity=binding.activity
-
+    hmssdk=HMSSDK.Builder(activity).build()
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
@@ -116,4 +144,7 @@ class HmssdkFlutterPlugin: FlutterPlugin, MethodCallHandler, HMSUpdateListener,A
   override fun onDetachedFromActivity() {
 
   }
+
+
+
 }
