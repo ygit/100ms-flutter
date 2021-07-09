@@ -4,9 +4,9 @@ class HMSRoom {
   String roomId;
   String name;
 
-  HMSRoom(this.roomId, this.name, this.peerList);
+  HMSRoom(this.roomId, this.name);//, this.peerList);
 
-  List<HMSPeer> peerList;
+  //List<HMSPeer> peerList;
 //SDKStore store;
 
 }

@@ -1,4 +1,4 @@
-class HMSTrack {
+class HMSTrack{
   bool isMute;
   bool isEnabled;
   String trackId;

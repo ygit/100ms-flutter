@@ -4,7 +4,9 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hmssdk_flutter/hmssdk_flutter.dart';
+import 'package:hmssdk_flutter/models/hms_room.dart';
 import 'package:hmssdk_flutter_example/common/constants.dart';
+import 'package:hmssdk_flutter_example/presentations/meeting_room.dart';
 import 'package:http/http.dart' as http;
 import 'package:hmssdk_flutter/models/hms_config.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -49,9 +51,12 @@ class _MeetLogInState extends State<MeetLogIn> {
   }
 
   void initializeTextEditingControllers() {
-    _hmssdkFlutter = HmssdkFlutter();
+    _hmssdkFlutter = HmssdkFlutter(
+      onJoinAndroid: (HMSRoom hmsRoom){
+        Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=>MeetingRoom(hmsRoom)));}
+    );
     nameController = new TextEditingController();
-    meetingFieldController = new TextEditingController();
+    meetingFieldController = new TextEditingController(text: Constant.defaultRoomID);
   }
 
   @override
@@ -95,7 +100,7 @@ class _MeetLogInState extends State<MeetLogIn> {
                 children: [
                   GestureDetector(
                     onTap: (){
-                      _hmssdkFlutter.leaveMeeting();
+                      _hmssdkFlutter.leaveMeetingAndroid();
                     },
                     child: Icon(
                       Icons.video_call,
@@ -121,6 +126,7 @@ class _MeetLogInState extends State<MeetLogIn> {
                 height: 15.0,
               ),
               TextField(
+
                 controller: meetingFieldController,
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(hintText: "Enter Meeting ID"),
@@ -136,7 +142,7 @@ class _MeetLogInState extends State<MeetLogIn> {
                                 //HmssdkFlutter.joinMeet(_hmsConfig)
                                 getToken(
                                     user: userNameValue,
-                                    room: Constant.defaultRoomID),
+                                    room: meetingId),
                                 debugPrint(meetingId)
                               }
                             //Untitled.joinMeet(value, "key")
@@ -169,6 +175,7 @@ class _MeetLogInState extends State<MeetLogIn> {
     );
   }
 
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -188,11 +195,15 @@ class _MeetLogInState extends State<MeetLogIn> {
       authToken: body['token'],
       roomId: meetingId,
     );
-    _hmssdkFlutter.joinMeeting1(_hmsConfig);
+    _hmssdkFlutter.joinMeetingAndroid(_hmsConfig);
   }
 
   Future<Void?> takePermissions() async{
-    var status = await Permission.camera.status;
     await Permission.camera.request();
   }
+
+  void onJoinMeetingAndroid(HMSRoom room){
+    Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=>MeetingRoom(room)));
+  }
+
 }

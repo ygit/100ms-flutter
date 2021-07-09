@@ -10,6 +10,9 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import live.hms.video.error.HMSException
 import live.hms.video.media.tracks.HMSTrack
 import live.hms.video.sdk.HMSSDK
@@ -25,6 +28,7 @@ import java.util.*
 //import java.util.*
 //import java.util.*
 import kotlin.collections.*
+import kotlin.coroutines.CoroutineContext
 
 
 /** HmssdkFlutterPlugin */
@@ -47,6 +51,7 @@ class HmssdkFlutterPlugin: FlutterPlugin, MethodCallHandler,ActivityAware  {
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     }
@@ -65,44 +70,69 @@ class HmssdkFlutterPlugin: FlutterPlugin, MethodCallHandler,ActivityAware  {
     return object: HMSUpdateListener{
 
       override fun onJoin(room: HMSRoom) {
-        // This will be called on a successful JOIN of the room by the user
-        // This is the point where applications can stop showing its loading state
+        Log.i("OnJoin","HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEE"+room.name)
+        val args=HashMap<String,Any>()
+        args.put("name",room.name)
+        args.put("roomId",room.roomId)
+        room.localPeer
+        //args.put("roomLocalPeer",room.localPeer)
+        Log.i("OnJoin",args.get("roomId").toString())
+        CoroutineScope(Dispatchers.Main).launch {
+          channel.invokeMethod("onJoinAndroid",args)
+        }
+
       }
 
       override fun onPeerUpdate(type: HMSPeerUpdate, peer: HMSPeer) {
-        // This will be called whenever there is an update on an existing peer
-        // or a new peer got added/existing peer is removed.
-        // This callback can be used to keep a track of all the peers in the room
+        Log.i("onPeerUpdate","HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEE")
+
       }
 
       override fun onRoomUpdate(type: HMSRoomUpdate, hmsRoom: HMSRoom) {
-        // This is called when there is a change in any property of the Room
+        Log.i("onRoomUpdate","HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEE")
       }
 
       override fun onTrackUpdate(type: HMSTrackUpdate, track: HMSTrack, peer: HMSPeer) {
-        // This is called when there are updates on an existing track
-        // or a new track got added/existing track is removed
-        // This callback can be used to render the video on screen whenever a track gets added
+        Log.i("onTrackUpdate","HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEE")
       }
 
       override fun onMessageReceived(message: HMSMessage) {
-        // This is called when there is a new broadcast message from any other peer in the room
-        // This can be used to implement chat is the room
+        Log.i("onMessageReceived","HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEE")
       }
 
       override fun onError(error: HMSException) {
-        // This will be called when there is an error in the system
-        // and SDK has already retried to fix the error
+        Log.i("onError","HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEE")
+        val args=HashMap<String,Any>()
+        args.put("action",error.action)
+        args.put("description",error.description)
+        args.put("name",error.name)
+        args.put("code",error.code.toString())
+        CoroutineScope(Dispatchers.Main).launch {
+          channel.invokeMethod("onErrorAndroid",args)
+        }
+
       }
 
       override fun onReconnecting(error: HMSException) {
-        // This is called when connection reestablishment starts
-        // This can be used to show a loading notification in the UI
-        // Parameter error: the error from the action that failed and caused the connection reestablishment
+        Log.i("onReconnecting","HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEE")
+        val args=HashMap<String,Any>()
+        args.put("action",error.action)
+        args.put("description",error.description)
+        args.put("name",error.name)
+        args.put("code",error.code.toString())
+        args.put("message",error.message)
+        CoroutineScope(Dispatchers.Main).launch {
+          channel.invokeMethod("onReconnectingAndroid",args)
+        }
+
       }
 
       override fun onReconnected() {
-        // This is called when the connection reestablishment completed susccessfully
+        Log.i("onReconnected","HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEE")
+        CoroutineScope(Dispatchers.Main).launch {
+          channel.invokeMethod("onReconnectedAndroid",null)
+        }
+
       }
 
     }
@@ -118,6 +148,7 @@ class HmssdkFlutterPlugin: FlutterPlugin, MethodCallHandler,ActivityAware  {
  //   val hmssdk1=HMSSDK.Builder(activity).shouldSkipPIIEvents(shouldSkipPiiEvents!!).build()
     val hmsUpdateListener=hmsListener()
     hmssdk.join(hmsConfig,hmsUpdateListener)
+
   }
 
   fun leaveMeeting(){
