@@ -28,7 +28,11 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f6635374-520c-494c-ae8d-73b820655433" name="Default Changelist" comment="" />
+    <list default="true" id="f6635374-520c-494c-ae8d-73b820655433" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -59,11 +63,21 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Flutter.main.dart">
+    <configuration name="main.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" temporary="true" nameIsGenerated="true">
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/example" />
+      <method v="2" />
+    </configuration>
     <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
       <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Dart Command Line App.main.dart" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -101,22 +115,26 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1398" height="489" key="GridCell.Tab.0.bottom" timestamp="1625190703001">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state width="1352" height="236" key="GridCell.Tab.0.bottom" timestamp="1626354553905">
+      <screen x="46" y="0" width="1394" height="900" />
     </state>
     <state width="1398" height="489" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1625190703001" />
-    <state width="1398" height="489" key="GridCell.Tab.0.center" timestamp="1625190703000">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state width="1352" height="236" key="GridCell.Tab.0.bottom/46.0.1394.900@46.0.1394.900" timestamp="1626354553905" />
+    <state width="1352" height="236" key="GridCell.Tab.0.center" timestamp="1626354553904">
+      <screen x="46" y="0" width="1394" height="900" />
     </state>
     <state width="1398" height="489" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1625190703000" />
-    <state width="1398" height="489" key="GridCell.Tab.0.left" timestamp="1625190703000">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state width="1352" height="236" key="GridCell.Tab.0.center/46.0.1394.900@46.0.1394.900" timestamp="1626354553904" />
+    <state width="1352" height="236" key="GridCell.Tab.0.left" timestamp="1626354553904">
+      <screen x="46" y="0" width="1394" height="900" />
     </state>
     <state width="1398" height="489" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1625190703000" />
-    <state width="1398" height="489" key="GridCell.Tab.0.right" timestamp="1625190703000">
-      <screen x="0" y="0" width="1440" height="900" />
+    <state width="1352" height="236" key="GridCell.Tab.0.left/46.0.1394.900@46.0.1394.900" timestamp="1626354553904" />
+    <state width="1352" height="236" key="GridCell.Tab.0.right" timestamp="1626354553904">
+      <screen x="46" y="0" width="1394" height="900" />
     </state>
     <state width="1398" height="489" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1625190703000" />
+    <state width="1352" height="236" key="GridCell.Tab.0.right/46.0.1394.900@46.0.1394.900" timestamp="1626354553904" />
     <state width="1398" height="489" key="GridCell.Tab.1.bottom" timestamp="1625190702999">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
