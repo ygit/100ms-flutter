@@ -1,7 +1,7 @@
-import 'package:hmssdk_flutter/common/platform_methods.dart';
-import 'package:hmssdk_flutter/model/hms_config.dart';
-import 'package:hmssdk_flutter/model/platform_method_response.dart';
-import 'package:hmssdk_flutter/service/platform_service.dart';
+import 'package:hmssdk_flutter/src/common/platform_methods.dart';
+import 'package:hmssdk_flutter/src/model/hms_config.dart';
+import 'package:hmssdk_flutter/src/model/platform_method_response.dart';
+import 'package:hmssdk_flutter/src/service/platform_service.dart';
 
 class HMSMeeting {
   Future<void> startMeeting({required HMSConfig config}) async {
@@ -33,7 +33,8 @@ class HMSMeeting {
     );
   }
 
-  Future<void> sendMessage(String message) async{
-    return await PlatformService.invokeMethod(PlatformMethod.sendMessage,arguments: {"message":message});
+  Future<void> sendMessage(String message) async {
+    return await PlatformService.invokeMethod(PlatformMethod.sendMessage,
+        arguments: {"message": message});
   }
 }

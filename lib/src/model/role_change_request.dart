@@ -1,4 +1,4 @@
-import 'package:hmssdk_flutter/model/hms_peer.dart';
+import 'package:hmssdk_flutter/src/model/hms_peer.dart';
 
 class RoleChangeRequest {
   final String suggestedRole;
@@ -14,7 +14,6 @@ class RoleChangeRequest {
   }
 
   Map<String, dynamic> toMap() {
-
     return {
       'suggestedRole': this.suggestedRole,
       'requestedBy': this.requestedBy,
@@ -22,5 +21,8 @@ class RoleChangeRequest {
     };
   }
 
-  RoleChangeRequest({required this.suggestedRole,required this.requestedBy,required this.token});
+  RoleChangeRequest(
+      {required this.suggestedRole,
+      required this.requestedBy,
+      required this.token});
 }

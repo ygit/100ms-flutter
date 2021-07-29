@@ -1,4 +1,4 @@
-import 'package:hmssdk_flutter/common/platform_methods.dart';
+import 'package:hmssdk_flutter/src/common/platform_methods.dart';
 
 class PlatformMethodResponse {
   final PlatformMethod method;

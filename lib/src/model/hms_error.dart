@@ -1,4 +1,4 @@
-import 'package:hmssdk_flutter/model/hms_error_code.dart';
+import 'package:hmssdk_flutter/src/model/hms_error_code.dart';
 
 class HMSError {
   final String id;

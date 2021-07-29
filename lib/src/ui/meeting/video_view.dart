@@ -2,16 +2,26 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show StandardMessageCodec;
-import 'package:hmssdk_flutter/model/hms_track.dart';
+import 'package:hmssdk_flutter/src/model/hms_track.dart';
 
 class VideoView extends StatelessWidget {
+  /// This is used to fetch video for a user
   final HMSTrack track;
+
+  /// This includes arguments that are sent to platform
   final Map<String, Object>? args;
 
-  const VideoView({Key? key, required this.track, this.args}) : super(key: key);
+  /// Creates a view with video stream
+  ///
+  /// It returns back the view from platform(android, ios) which can be used to show video in app
+  const VideoView(
+      {Key? key, required this.track, this.args, this.onViewCreated})
+      : super(key: key);
+  final Function? onViewCreated;
 
+  /// This is used to call callback function sent by user. It will only be called after view is built
   void onPlatformViewCreated(int id) {
-    print('On PlatformView Created:: id:$id');
+    if (onViewCreated != null) onViewCreated!();
   }
 
   @override

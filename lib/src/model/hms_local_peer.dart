@@ -1,8 +1,8 @@
-import 'package:hmssdk_flutter/model/hms_audio_track.dart';
-import 'package:hmssdk_flutter/model/hms_peer.dart';
-import 'package:hmssdk_flutter/model/hms_role.dart';
-import 'package:hmssdk_flutter/model/hms_track.dart';
-import 'package:hmssdk_flutter/model/hms_video_track.dart';
+import 'package:hmssdk_flutter/src/model/hms_audio_track.dart';
+import 'package:hmssdk_flutter/src/model/hms_peer.dart';
+import 'package:hmssdk_flutter/src/model/hms_role.dart';
+import 'package:hmssdk_flutter/src/model/hms_track.dart';
+import 'package:hmssdk_flutter/src/model/hms_video_track.dart';
 
 class HMSLocalPeer extends HMSPeer {
   HMSLocalPeer({

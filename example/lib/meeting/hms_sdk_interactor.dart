@@ -1,8 +1,7 @@
-import 'package:hmssdk_flutter/meeting/meeting.dart';
-import 'package:hmssdk_flutter/model/hms_config.dart';
-import 'package:hmssdk_flutter/model/platform_method_response.dart';
-import 'package:hmssdk_flutter/model/hms_message.dart';
-
+import 'package:hmssdk_flutter/src/meeting/meeting.dart';
+import 'package:hmssdk_flutter/src/model/hms_config.dart';
+import 'package:hmssdk_flutter/src/model/hms_message.dart';
+import 'package:hmssdk_flutter/src/model/platform_method_response.dart';
 
 class HMSSDKInteractor {
   late HMSConfig config;
@@ -34,7 +33,7 @@ class HMSSDKInteractor {
     return await _meeting.switchCamera();
   }
 
-  Future<void> sendMessage(String message) async{
+  Future<void> sendMessage(String message) async {
     return await _meeting.sendMessage(message);
   }
 }

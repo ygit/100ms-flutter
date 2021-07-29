@@ -1,4 +1,4 @@
-import 'package:hmssdk_flutter/model/hms_config.dart';
+import 'package:hmssdk_flutter/src/model/hms_config.dart';
 
 class HMSSdk {
   void join({

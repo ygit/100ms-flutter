@@ -1,9 +1,9 @@
-import 'package:hmssdk_flutter/common/platform_methods.dart';
-import 'package:hmssdk_flutter/enum/hms_track_kind.dart';
-import 'package:hmssdk_flutter/enum/hms_track_source.dart';
-import 'package:hmssdk_flutter/model/hms_video_track.dart';
-import 'package:hmssdk_flutter/model/hms_video_track_setting.dart';
-import 'package:hmssdk_flutter/service/platform_service.dart';
+import 'package:hmssdk_flutter/src/common/platform_methods.dart';
+import 'package:hmssdk_flutter/src/enum/hms_track_kind.dart';
+import 'package:hmssdk_flutter/src/enum/hms_track_source.dart';
+import 'package:hmssdk_flutter/src/model/hms_video_track.dart';
+import 'package:hmssdk_flutter/src/model/hms_video_track_setting.dart';
+import 'package:hmssdk_flutter/src/service/platform_service.dart';
 
 class HMSLocalVideoTrack extends HMSVideoTrack {
   final HMSVideoTrackSetting setting;
@@ -23,15 +23,15 @@ class HMSLocalVideoTrack extends HMSVideoTrack {
           trackId: trackId,
         );
 
-  Future<void> startCapturing() async{
+  Future<void> startCapturing() async {
     await PlatformService.invokeMethod(PlatformMethod.startCapturing);
   }
 
-  Future<void> stopCapturing() async{
+  Future<void> stopCapturing() async {
     await PlatformService.invokeMethod(PlatformMethod.stopCapturing);
   }
 
-  Future<void> switchCamera() async{
+  Future<void> switchCamera() async {
     await PlatformService.invokeMethod(PlatformMethod.switchCamera);
   }
 }

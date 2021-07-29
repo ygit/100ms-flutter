@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:hmssdk_flutter/common/platform_methods.dart';
-import 'package:hmssdk_flutter/model/platform_method_response.dart';
+import 'package:hmssdk_flutter/src/common/platform_methods.dart';
+import 'package:hmssdk_flutter/src/model/platform_method_response.dart';
 
 class PlatformService {
   static const MethodChannel _channel = const MethodChannel('hmssdk_flutter');

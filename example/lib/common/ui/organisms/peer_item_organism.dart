@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hmssdk_flutter/model/hms_track.dart';
-import 'package:hmssdk_flutter/ui/meeting/video_view.dart';
+import 'package:hmssdk_flutter/src/model/hms_track.dart';
+import 'package:hmssdk_flutter/src/ui/meeting/video_view.dart';
 
 class PeerItemOrganism extends StatelessWidget {
   final HMSTrack track;

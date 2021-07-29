@@ -1,6 +1,6 @@
-import 'package:hmssdk_flutter/enum/hms_track_kind.dart';
-import 'package:hmssdk_flutter/enum/hms_track_source.dart';
-import 'package:hmssdk_flutter/model/hms_peer.dart';
+import 'package:hmssdk_flutter/src/enum/hms_track_kind.dart';
+import 'package:hmssdk_flutter/src/enum/hms_track_source.dart';
+import 'package:hmssdk_flutter/src/model/hms_peer.dart';
 
 class HMSTrack {
   final String trackId;
@@ -9,7 +9,7 @@ class HMSTrack {
   final String trackDescription;
   final HMSPeer? peer;
 
-  Future<bool> isMute() async{
+  Future<bool> isMute() async {
     return false;
   }
 
@@ -21,7 +21,6 @@ class HMSTrack {
       this.peer});
 
   factory HMSTrack.fromMap(Map map, HMSPeer? peer) {
-
     return HMSTrack(
         trackId: map['track_id'],
         trackDescription: map['track_description'],

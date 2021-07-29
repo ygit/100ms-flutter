@@ -1,7 +1,7 @@
-import 'package:hmssdk_flutter/enum/hms_track_kind.dart';
-import 'package:hmssdk_flutter/enum/hms_track_source.dart';
-import 'package:hmssdk_flutter/model/hms_audio_track.dart';
-import 'package:hmssdk_flutter/model/hms_audio_track_setting.dart';
+import 'package:hmssdk_flutter/src/enum/hms_track_kind.dart';
+import 'package:hmssdk_flutter/src/enum/hms_track_source.dart';
+import 'package:hmssdk_flutter/src/model/hms_audio_track.dart';
+import 'package:hmssdk_flutter/src/model/hms_audio_track_setting.dart';
 
 class HMSLocalAudioTrack extends HMSAudioTrack {
   final HMSAudioTrackSetting setting;
