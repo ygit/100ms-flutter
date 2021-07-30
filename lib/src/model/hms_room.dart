@@ -1,11 +1,15 @@
 import 'package:hmssdk_flutter/src/model/hms_peer.dart';
 
+/// This is the class responsible for providing connected room details
 class HMSRoom {
   final String id;
   final String name;
   final String? metaData;
+
+  /// This holds list of app peers
   final List<HMSPeer> peers;
 
+  /// Creates a new [HMSRoom]
   HMSRoom(
       {required this.id,
       required this.name,
