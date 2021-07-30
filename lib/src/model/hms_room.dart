@@ -1,6 +1,6 @@
 import 'package:hmssdk_flutter/src/model/hms_peer.dart';
 
-/// This is the class responsible for providing connected room details
+/// This class is responsible for providing connected room details
 class HMSRoom {
   final String id;
   final String name;

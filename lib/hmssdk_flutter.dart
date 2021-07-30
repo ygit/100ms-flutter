@@ -12,8 +12,8 @@ export 'src/model/hms_error.dart';
 export 'src/model/hms_message.dart';
 export 'src/model/hms_message.dart';
 export 'src/model/hms_peer.dart';
+export 'src/model/hms_room.dart';
 export 'src/model/hms_track.dart';
 export 'src/model/platform_method_response.dart';
 export 'src/ui/meeting/video_view.dart';
-
 // TODO:: add all public exports
