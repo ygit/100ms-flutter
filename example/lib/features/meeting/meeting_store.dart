@@ -1,15 +1,7 @@
 import 'dart:io';
 
-import 'package:hmssdk_flutter/src/common/platform_methods.dart';
-import 'package:hmssdk_flutter/src/enum/hms_peer_update.dart';
-import 'package:hmssdk_flutter/src/enum/hms_track_update.dart';
-import 'package:hmssdk_flutter/src/exceptions/hms_exception.dart';
-import 'package:hmssdk_flutter/src/model/hms_error.dart';
-import 'package:hmssdk_flutter/src/model/hms_message.dart';
-import 'package:hmssdk_flutter/src/model/hms_peer.dart';
-import 'package:hmssdk_flutter/src/model/hms_track.dart';
-import 'package:hmssdk_flutter/src/model/platform_method_response.dart';
-import 'package:hmssdk_flutter_example/meeting/meeting_controller.dart';
+import 'package:hmssdk_flutter/hmssdk_flutter.dart';
+import 'package:hmssdk_flutter_example/features/meeting/meeting_controller.dart';
 import 'package:mobx/mobx.dart';
 
 part 'meeting_store.g.dart';

@@ -1,15 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:hmssdk_flutter/src/enum/hms_track_kind.dart';
-import 'package:hmssdk_flutter/src/enum/hms_track_source.dart';
-import 'package:hmssdk_flutter/src/model/hms_track.dart';
+import 'package:hmssdk_flutter/hmssdk_flutter.dart';
 import 'package:hmssdk_flutter_example/common/ui/organisms/chat_bottom_sheet.dart';
 import 'package:hmssdk_flutter_example/common/ui/organisms/peer_item_organism.dart';
 import 'package:hmssdk_flutter_example/enum/meeting_flow.dart';
-import 'package:hmssdk_flutter_example/main.dart';
-import 'package:hmssdk_flutter_example/meeting/meeting_controller.dart';
-import 'package:hmssdk_flutter_example/meeting/meeting_store.dart';
+import 'package:hmssdk_flutter_example/features/login/login_page.dart';
+import 'package:hmssdk_flutter_example/features/meeting/meeting_controller.dart';
+import 'package:hmssdk_flutter_example/features/meeting/meeting_store.dart';
 
 class MeetingPage extends StatefulWidget {
   final String roomId;
@@ -58,7 +56,6 @@ class _MeetingPageState extends State<MeetingPage> {
                   )),
           IconButton(
             onPressed: () async {
-              //TODO:: switch camera
               _meetingStore.toggleCamera();
             },
             icon: Icon(Icons.switch_camera),
@@ -181,7 +178,7 @@ class _MeetingPageState extends State<MeetingPage> {
                       onPressed: () {
                         _meetingStore.meetingController.leaveMeeting();
                         Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (ctx) => HomePage()));
+                            MaterialPageRoute(builder: (ctx) => LoginPage()));
                       },
                       icon: Icon(Icons.call_end)),
                 ),

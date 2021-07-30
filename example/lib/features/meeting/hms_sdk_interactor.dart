@@ -1,7 +1,4 @@
-import 'package:hmssdk_flutter/src/meeting/meeting.dart';
-import 'package:hmssdk_flutter/src/model/hms_config.dart';
-import 'package:hmssdk_flutter/src/model/hms_message.dart';
-import 'package:hmssdk_flutter/src/model/platform_method_response.dart';
+import 'package:hmssdk_flutter/hmssdk_flutter.dart';
 
 class HMSSDKInteractor {
   late HMSConfig config;
