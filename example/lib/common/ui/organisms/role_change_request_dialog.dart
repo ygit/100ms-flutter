@@ -42,8 +42,6 @@ class _RoleChangeDialogOrganismState extends State<RoleChangeDialogOrganism> {
           },
         ),
 
-        ),
-
       ],
     );
   }
