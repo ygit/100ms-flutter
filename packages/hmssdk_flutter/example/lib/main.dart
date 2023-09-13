@@ -260,12 +260,13 @@ class _HomePageState extends State<HomePage> {
     super.didUpdateWidget(oldWidget);
   }
 
-  void joinMeeting() {
+  void joinMeeting() async {
     if (meetingLinkController.text.trim().isEmpty) {
       return;
     }
     FocusManager.instance.primaryFocus?.unfocus();
-
+    AppDebugConfig.isMockLayoutAPIEnabled =
+        await Utilities.getBoolData(key: 'is_mock_layout_api_enabled') ?? false;
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -347,7 +348,7 @@ class _HomePageState extends State<HomePage> {
                   child: TextField(
                     key: Key('room_code_field'),
                     textInputAction: TextInputAction.done,
-                    cursorColor: primaryDefault,
+                    cursorColor: HMSThemeColors.primaryDefault,
                     onSubmitted: (value) {
                       joinMeeting();
                     },
@@ -361,7 +362,7 @@ class _HomePageState extends State<HomePage> {
                         contentPadding: EdgeInsets.only(left: 16),
                         fillColor: themeSurfaceColor,
                         filled: true,
-                        hintText: 'Paste the room code here',
+                        hintText: 'Paste the room code or link here',
                         hintStyle: GoogleFonts.inter(
                             color: hmsHintColor,
                             height: 1.5,
@@ -376,12 +377,12 @@ class _HomePageState extends State<HomePage> {
                                 },
                                 icon: Icon(
                                   Icons.clear,
-                                  color: primaryDefault,
+                                  color: Colors.white,
                                 ),
                               ),
                         focusedBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: primaryDefault, width: 2),
+                            borderSide: BorderSide(
+                                color: HMSThemeColors.primaryDefault, width: 2),
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(8))),
                         enabledBorder: OutlineInputBorder(

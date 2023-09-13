@@ -184,7 +184,10 @@ enum PlatformMethod {
   removeHLSStatsListener,
   switchAudioOutputUsingiOSUI,
   sendHLSTimedMetadata,
-  toggleAlwaysScreenOn
+  toggleAlwaysScreenOn,
+  getRoomLayout,
+  previewForRole,
+  cancelPreview
 }
 
 extension PlatformMethodValues on PlatformMethod {
@@ -336,6 +339,12 @@ extension PlatformMethodValues on PlatformMethod {
       case PlatformMethod.stopScreenShare:
         return "stop_screen_share";
 
+      case PlatformMethod.previewForRole:
+        return "preview_for_role";
+
+      case PlatformMethod.cancelPreview:
+        return "cancel_preview";
+
       case PlatformMethod.isScreenShareActive:
         return 'is_screen_share_active';
       case PlatformMethod.getAllTracks:
@@ -454,6 +463,8 @@ extension PlatformMethodValues on PlatformMethod {
         return "send_hls_timed_metadata";
       case PlatformMethod.toggleAlwaysScreenOn:
         return "toggle_always_screen_on";
+      case PlatformMethod.getRoomLayout:
+        return "get_room_layout";
       default:
         return 'unknown';
     }
@@ -526,6 +537,12 @@ extension PlatformMethodValues on PlatformMethod {
 
       case 'preview':
         return PlatformMethod.preview;
+
+      case 'preview_for_role':
+        return PlatformMethod.previewForRole;
+
+      case "cancel_preview":
+        return PlatformMethod.cancelPreview;
 
       case 'accept_change_role':
         return PlatformMethod.acceptChangeRole;
@@ -725,6 +742,8 @@ extension PlatformMethodValues on PlatformMethod {
         return PlatformMethod.sendHLSTimedMetadata;
       case "toggle_always_screen_on":
         return PlatformMethod.toggleAlwaysScreenOn;
+      case "get_room_layout":
+        return PlatformMethod.getRoomLayout;
       default:
         return PlatformMethod.unknown;
     }

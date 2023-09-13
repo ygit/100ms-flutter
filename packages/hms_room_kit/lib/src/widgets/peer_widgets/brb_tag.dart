@@ -1,12 +1,14 @@
 //Package imports
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:hms_room_kit/src/common/app_color.dart';
-import 'package:hms_room_kit/src/model/peer_track_node.dart';
 import 'package:provider/provider.dart';
 
 //Project imports
+import 'package:hms_room_kit/src/layout_api/hms_theme_colors.dart';
+import 'package:hms_room_kit/src/model/peer_track_node.dart';
 
+///[BRBTag] is a widget that is used to render the BRB tag
+///BRB stands for Be Right Back
 class BRBTag extends StatelessWidget {
   const BRBTag({super.key});
 
@@ -21,14 +23,20 @@ class BRBTag extends StatelessWidget {
                   child: Semantics(
                     label:
                         "fl_${context.read<PeerTrackNode>().peer.name}_brb_tag",
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                      child: SvgPicture.asset(
-                        "packages/hms_room_kit/lib/src/assets/icons/brb.svg",
-                        colorFilter: ColorFilter.mode(
-                            onSurfaceHighEmphasis, BlendMode.srcIn),
-                        width: 26,
-                        semanticsLabel: "brb_label",
+                    child: Container(
+                      height: 32,
+                      width: 32,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: HMSThemeColors.secondaryDim),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: SvgPicture.asset(
+                          "packages/hms_room_kit/lib/src/assets/icons/brb.svg",
+                          width: 19.25,
+                          height: 11,
+                          semanticsLabel: "brb_label",
+                        ),
                       ),
                     ),
                   ),

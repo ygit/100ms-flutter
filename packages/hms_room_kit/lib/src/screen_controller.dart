@@ -1,13 +1,21 @@
+///Package imports
 import 'package:flutter/material.dart';
+import 'package:hmssdk_flutter/hmssdk_flutter.dart';
+import 'package:provider/provider.dart';
+
+///Project imports
 import 'package:hms_room_kit/hms_room_kit.dart';
 import 'package:hms_room_kit/src/common/utility_components.dart';
 import 'package:hms_room_kit/src/hmssdk_interactor.dart';
 import 'package:hms_room_kit/src/preview/preview_page.dart';
 import 'package:hms_room_kit/src/preview/preview_permissions.dart';
 import 'package:hms_room_kit/src/preview/preview_store.dart';
-import 'package:hmssdk_flutter/hmssdk_flutter.dart';
-import 'package:provider/provider.dart';
 
+///[ScreenController] is the controller for the preview screen
+///It takes following parameters:
+///[roomCode] is the room code of the room to join
+///[options] is the options for the prebuilt
+///For more details checkout the [HMSPrebuiltOptions] class
 class ScreenController extends StatefulWidget {
   ///[roomCode] is the room code of the room to join
   final String roomCode;
@@ -30,6 +38,8 @@ class _ScreenControllerState extends State<ScreenController> {
   @override
   void initState() {
     super.initState();
+    Constant.prebuiltOptions = widget.options;
+    Constant.meetingUrl = widget.roomCode;
     _checkPermissions();
   }
 
@@ -61,7 +71,8 @@ class _ScreenControllerState extends State<ScreenController> {
         joinWithMutedAudio: AppDebugConfig.joinWithMutedAudio,
         joinWithMutedVideo: AppDebugConfig.joinWithMutedVideo,
         isSoftwareDecoderDisabled: AppDebugConfig.isSoftwareDecoderDisabled,
-        isAudioMixerDisabled: AppDebugConfig.isAudioMixerDisabled);
+        isAudioMixerDisabled: AppDebugConfig.isAudioMixerDisabled,
+        isPrebuilt: true);
     await _hmsSDKInteractor.build();
     _previewStore = PreviewStore(hmsSDKInteractor: _hmsSDKInteractor);
     HMSException? ans = await _previewStore.startPreview(
@@ -70,13 +81,11 @@ class _ScreenControllerState extends State<ScreenController> {
     ///If preview fails then we show the error dialog
     ///with the error message and description
     if (ans != null && mounted) {
-      UtilityComponents.showErrorDialog(
+      showGeneralDialog(
           context: context,
-          errorMessage: "ACTION: ${ans.action} DESCRIPTION: ${ans.description}",
-          errorTitle: ans.message ?? "Join Error",
-          actionMessage: "OK",
-          action: () {
-            Navigator.popUntil(context, (route) => route.isFirst);
+          pageBuilder: (_, data, __) {
+            return UtilityComponents.showFailureError(ans, context,
+                () => Navigator.of(context).popUntil((route) => route.isFirst));
           });
     } else {
       _hmsSDKInteractor.toggleAlwaysScreenOn();
@@ -105,7 +114,7 @@ class _ScreenControllerState extends State<ScreenController> {
           ? Center(
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: primaryDefault,
+                color: HMSThemeColors.primaryDefault,
               ),
             )
           : isPermissionGranted

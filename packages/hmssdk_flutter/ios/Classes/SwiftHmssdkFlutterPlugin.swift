@@ -26,6 +26,10 @@ public class SwiftHmssdkFlutterPlugin: NSObject, FlutterPlugin, HMSUpdateListene
 
     var roleChangeRequest: HMSRoleChangeRequest?
 
+    var previewForRoleVideoTrack: HMSLocalVideoTrack?
+
+    var previewForRoleAudioTrack: HMSLocalAudioTrack?
+
     internal var hmsSDK: HMSSDK?
 
     private var isStatsActive = false
@@ -177,7 +181,7 @@ public class SwiftHmssdkFlutterPlugin: NSObject, FlutterPlugin, HMSUpdateListene
             // MARK: - Audio Helpers
 
         case "switch_audio", "is_audio_mute", "mute_room_audio_locally", "un_mute_room_audio_locally", "set_volume", "toggle_mic_mute_state":
-            HMSAudioAction.audioActions(call, result, hmsSDK)
+            HMSAudioAction.audioActions(call, result, hmsSDK, self)
 
         case "set_playback_allowed_for_track":
             setPlaybackAllowedForTrack(call, result)
@@ -185,7 +189,7 @@ public class SwiftHmssdkFlutterPlugin: NSObject, FlutterPlugin, HMSUpdateListene
             // MARK: - Video Helpers
 
         case "switch_video", "switch_camera", "is_video_mute", "mute_room_video_locally", "un_mute_room_video_locally", "toggle_camera_mute_state":
-            HMSVideoAction.videoActions(call, result, hmsSDK)
+            HMSVideoAction.videoActions(call, result, hmsSDK, self)
 
             // MARK: - Messaging
 
@@ -194,7 +198,7 @@ public class SwiftHmssdkFlutterPlugin: NSObject, FlutterPlugin, HMSUpdateListene
 
             // MARK: - Role based Actions
 
-        case "get_roles", "change_role", "accept_change_role", "end_room", "remove_peer", "on_change_track_state_request", "change_track_state_for_role", "change_role_of_peers_with_roles", "change_role_of_peer":
+        case "get_roles", "change_role", "accept_change_role", "end_room", "remove_peer", "on_change_track_state_request", "change_track_state_for_role", "change_role_of_peers_with_roles", "change_role_of_peer", "preview_for_role", "cancel_preview":
             roleActions(call, result)
 
             // MARK: - Peer Action
@@ -285,6 +289,9 @@ public class SwiftHmssdkFlutterPlugin: NSObject, FlutterPlugin, HMSUpdateListene
         case "toggle_always_screen_on":
             toggleAlwaysScreenOn(result)
 
+        case "get_room_layout":
+            getRoomLayout(call, result)
+
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -345,6 +352,12 @@ public class SwiftHmssdkFlutterPlugin: NSObject, FlutterPlugin, HMSUpdateListene
 
         case "change_role_of_peer":
             changeRole(call, result)
+
+        case "preview_for_role":
+            previewForRole(call, result)
+
+        case "cancel_preview":
+            cancelPreview(result)
 
         default:
             result(FlutterMethodNotImplemented)
@@ -670,7 +683,9 @@ public class SwiftHmssdkFlutterPlugin: NSObject, FlutterPlugin, HMSUpdateListene
         }
         let dartSDKVersion = arguments?["dart_sdk_version"] as! String
         let hmsSDKVersion = arguments?["hmssdk_version"] as! String
-        let framework = HMSFrameworkInfo(type: .flutter, version: dartSDKVersion, sdkVersion: hmsSDKVersion)
+        let isPrebuilt = arguments?["is_prebuilt"] as? Bool ?? false
+
+        let framework = HMSFrameworkInfo(type: .flutter, version: dartSDKVersion, sdkVersion: hmsSDKVersion, isPrebuilt: isPrebuilt)
         audioMixerSourceMap = [:]
 
         hmsSDK = HMSSDK.build { [weak self] sdk in
@@ -726,20 +741,48 @@ public class SwiftHmssdkFlutterPlugin: NSObject, FlutterPlugin, HMSUpdateListene
         result(nil)
     }
 
-    /*
-     private func previewForRole(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-     let arguments = call.arguments as! [AnyHashable: Any]
-     
-     hmsSDK?.preview(role: ) { ,  in
-     
-     }
-     }
-     
-     private func cancelPreview(_ result: FlutterResult) {
-     hmsSDK?.cancelPreview()
-     result(nil)
-     }
-     */
+    private func previewForRole(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+
+        guard let arguments = call.arguments as? [AnyHashable: Any],
+              let roleString = arguments["role_name"] as? String,
+              let role = HMSCommonAction.getRole(by: roleString, hmsSDK: hmsSDK)
+        else {
+            result(HMSResultExtension.toDictionary(false, HMSErrorExtension.getError("Invalid role parameters for role in \(#function)")))
+            return
+        }
+
+        hmsSDK?.preview(role: role) { tracks, error in
+
+            if let error = error {
+                print(#function, error)
+                result(HMSResultExtension.toDictionary(false, error))
+                return
+            }
+
+            if let tracks = tracks {
+
+                var dict = [[AnyHashable: Any]]()
+
+                for track in tracks {
+                    if track.kind == HMSTrackKind.video {
+                        previewForRoleVideoTrack = track as? HMSLocalVideoTrack
+                    } else if track.kind == HMSTrackKind.audio {
+                        previewForRoleAudioTrack = track as? HMSLocalAudioTrack
+                    }
+                    dict.append(HMSTrackExtension.toDictionary(track))
+                }
+
+                result(HMSResultExtension.toDictionary(true, dict))
+            }
+        }
+    }
+
+    private func cancelPreview(_ result: FlutterResult) {
+        self.previewForRoleAudioTrack = nil
+        self.previewForRoleVideoTrack = nil
+        hmsSDK?.cancelPreview()
+        result(HMSResultExtension.toDictionary(true))
+    }
 
     private func join(_ call: FlutterMethodCall, _ result: FlutterResult) {
 
@@ -824,6 +867,44 @@ public class SwiftHmssdkFlutterPlugin: NSObject, FlutterPlugin, HMSUpdateListene
         })
     }
 
+    /**
+     * [getRoomLayout]  is used to get the layout themes for the room set in the dashboard.
+     */
+
+    private func getRoomLayout(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        let arguments = call.arguments as! [AnyHashable: Any]
+
+        guard let authToken = arguments["auth_token"] as? String?
+
+        else {
+            result(HMSErrorExtension.getError("Invalid parameters for getRoomLayout in \(#function)"))
+            return
+        }
+
+        let endPoint = arguments["endpoint"] as? String
+
+        // This is to make the mock API links work
+        if endPoint != nil && (endPoint!.contains("mockable") || endPoint!.contains("nonprod")) {
+            UserDefaults.standard.set(endPoint, forKey: "HMSRoomLayoutEndpointOverride")
+        }
+        // This is to make the QA API work
+        else {
+            UserDefaults.standard.removeObject(forKey: "HMSRoomLayoutEndpointOverride")
+        }
+
+        hmsSDK?.getRoomLayout(using: authToken!) { layout, error in
+            if let error = error {
+                result(HMSResultExtension.toDictionary(false, HMSErrorExtension.toDictionary(error)))
+            } else {
+                if let rawData = layout?.rawData {
+                    let jsonString = String(decoding: rawData, as: UTF8.self)
+                    result(HMSResultExtension.toDictionary(true, jsonString))
+                    return
+                }
+            }
+        }
+    }
+
     private func changeRole(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
 
         let arguments = call.arguments as! [AnyHashable: Any]
@@ -855,6 +936,8 @@ public class SwiftHmssdkFlutterPlugin: NSObject, FlutterPlugin, HMSUpdateListene
                     result(HMSErrorExtension.toDictionary(error))
                 } else {
                     self?.roleChangeRequest = nil
+                    self?.previewForRoleAudioTrack = nil
+                    self?.previewForRoleVideoTrack = nil
                     result(nil)
                 }
             }

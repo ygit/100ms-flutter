@@ -69,14 +69,15 @@ class HMSSDK {
       this.iOSScreenshareConfig,
       this.hmsLogSettings,
       @Deprecated("Use iOSScreenshareConfig") this.appGroup,
-      @Deprecated("Use iOSScreenshareConfig") this.preferredExtension});
+      @Deprecated("Use iOSScreenshareConfig") this.preferredExtension,
+      this.isPrebuilt = false});
 
   /// The build function should be called after creating an instance of the [HMSSDK].
   ///
   /// Await the result & if true then create [HMSConfig] object to join or preview a room.
   Future<void> build() async {
     await HmsSdkManager().createHMSSdk(hmsTrackSetting, iOSScreenshareConfig,
-        appGroup, preferredExtension, hmsLogSettings);
+        appGroup, preferredExtension, hmsLogSettings, isPrebuilt);
   }
 
   ///[getAuthTokenByRoomCode] is used to get the authentication token to join the room
@@ -95,6 +96,29 @@ class HMSSDK {
     };
     var result = await PlatformService.invokeMethod(
         PlatformMethod.getAuthTokenByRoomCode,
+        arguments: arguments);
+
+    //If the method is executed successfully we get the "success":"true"
+    //Hence we pass the String directly
+    //Else we parse it with HMSException
+    if (result["success"]) {
+      return result["data"];
+    } else {
+      return HMSException.fromMap(result["data"]["error"]);
+    }
+  }
+
+  ///[getRoomLayout] is used to get the layout themes for the room
+  /// set in the dashboard.
+  ///
+  ///This returns an object of Future<dynamic> which can be either
+  ///of HMSException type or a Json String type based on whether
+  ///method execution is completed successfully or not.
+  Future<dynamic> getRoomLayout(
+      {required String authToken, String? endPoint}) async {
+    var arguments = {"auth_token": authToken, "endpoint": endPoint};
+    var result = await PlatformService.invokeMethod(
+        PlatformMethod.getRoomLayout,
         arguments: arguments);
 
     //If the method is executed successfully we get the "success":"true"
@@ -635,6 +659,60 @@ class HMSSDK {
         hmsActionResultListener.onException(
             methodType: HMSActionResultListenerMethod.acceptChangeRole,
             hmsException: HMSException.fromMap(result["error"]));
+    }
+  }
+
+  /// Preview for a specific Role before changing it.
+  ///
+  /// By previewing before doing a Role Change, users can see their expected Audio & Video tracks which will be visible to other Peers in Room post changing the Role.
+  /// **Parameters**:
+  ///
+  /// **role** - The new [role] into which the Peer is going to be changed into.
+  ///
+  /// This returns an object of Future<dynamic> which can be either
+  /// of HMSException type or a List<HMSTrack> type based on whether
+  /// method execution is completed successfully or not.
+  ///
+  /// Refer [previewForRole guide here](https://www.100ms.live/docs/flutter/v2/how-to-guides/interact-with-room/peer/change-role)
+  Future<dynamic> previewForRole({required String role}) async {
+    var arguments = {
+      "role_name": role,
+    };
+    var result = await PlatformService.invokeMethod(
+        PlatformMethod.previewForRole,
+        arguments: arguments);
+
+    if (result["success"]) {
+      List<HMSTrack> tracks = [];
+      (result["data"] as List).forEach((track) {
+        tracks.add(track['instance_of']
+            ? HMSVideoTrack.fromMap(map: track, isLocal: true)
+            : HMSAudioTrack.fromMap(map: track, isLocal: true));
+      });
+
+      return tracks;
+    } else {
+      return HMSException.fromMap(result["data"]["error"]);
+    }
+  }
+
+  /// Cancel the Previewing for Role invocation.
+  /// If a [previewForRole] call was performed previously then calling this method clears the tracks created anticipating a Change of Role
+  /// This method only needs to be called if the user declined the request for role change.
+  ///
+  /// This returns an object of Future<dynamic> which can be either
+  /// of HMSException type or a boolean value [true] based on whether
+  /// method execution is completed successfully or not.
+  ///
+  /// Refer the [cancelPreview guide here](https://www.100ms.live/docs/flutter/v2/how-to-guides/interact-with-room/peer/change-role)
+  Future<dynamic> cancelPreview() async {
+    var result =
+        await PlatformService.invokeMethod(PlatformMethod.cancelPreview);
+
+    if (result["success"]) {
+      return null;
+    } else {
+      return HMSException.fromMap(result["data"]["error"]);
     }
   }
 
@@ -1324,4 +1402,6 @@ class HMSSDK {
   HMSLogSettings? hmsLogSettings;
 
   bool previewState = false;
+
+  final bool isPrebuilt;
 }

@@ -1,11 +1,25 @@
 //Dart imports
-
-//Project imports
 import 'dart:io';
 
+///Package imports
 import 'package:hmssdk_flutter/hmssdk_flutter.dart';
+
+//Project imports
 import 'package:hms_room_kit/src/common/utility_functions.dart';
 
+///[HMSSDKInteractor] is the class which is used to interact with the SDK
+///It contains all the methods that are required to interact with the SDK
+///It takes the following parameters:
+///[iOSScreenshareConfig] - This is optional values only required for implementing Screen Share on iOS. They are not required for Android.
+///Remove [iOSScreenshareConfig] if your app does not implements Screen Share on iOS.
+///
+///[joinWithMutedAudio] & [joinWithMutedVideo] are required to set the initial audio/video state i.e what should be camera and mic
+///state while room is joined. By default both audio and video are kept as unmute.
+///
+///[isSoftwareDecoderDisabled] - This is used to disable the software decode. By default it's true.
+///[isAudioMixerDisabled] - This is used to disable the audio mixer for iOS. By default it's true.
+///[audioMode] - This is used to set the audio mode. By default it's VOICE.
+///[isPrebuilt] - This is used to set the prebuilt mode. By default it's false.
 class HMSSDKInteractor {
   /// [hmsSDK] is the instance of the HMSSDK class which is used to interact with the SDK.
   late HMSSDK hmsSDK;
@@ -20,7 +34,8 @@ class HMSSDKInteractor {
       bool joinWithMutedVideo = false,
       bool isSoftwareDecoderDisabled = true,
       bool isAudioMixerDisabled = true,
-      HMSAudioMode audioMode = HMSAudioMode.VOICE}) {
+      HMSAudioMode audioMode = HMSAudioMode.VOICE,
+      bool isPrebuilt = false}) {
     HMSLogSettings hmsLogSettings = HMSLogSettings(
         maxDirSizeInBytes: 1000000,
         isLogStorageEnabled: true,
@@ -36,7 +51,8 @@ class HMSSDKInteractor {
     hmsSDK = HMSSDK(
         iOSScreenshareConfig: iOSScreenshareConfig,
         hmsLogSettings: hmsLogSettings,
-        hmsTrackSetting: trackSetting);
+        hmsTrackSetting: trackSetting,
+        isPrebuilt: isPrebuilt);
   }
 
   Future<void> build() async {
@@ -363,5 +379,17 @@ class HMSSDKInteractor {
 
   void toggleAlwaysScreenOn() {
     hmsSDK.toggleAlwaysScreenOn();
+  }
+
+  dynamic getRoomLayout({required String authToken, String? endPoint}) async {
+    return await hmsSDK.getRoomLayout(authToken: authToken, endPoint: endPoint);
+  }
+
+  Future<dynamic> previewForRole({required String role}) async {
+    return await hmsSDK.previewForRole(role: role);
+  }
+
+  Future<dynamic> cancelPreview() async {
+    return await hmsSDK.cancelPreview();
   }
 }

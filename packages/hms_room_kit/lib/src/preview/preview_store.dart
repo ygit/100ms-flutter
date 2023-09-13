@@ -1,8 +1,13 @@
-//Package imports
+//Dart imports
 import 'dart:developer';
 
+///Package imports
 import 'package:flutter/cupertino.dart';
 import 'package:hmssdk_flutter/hmssdk_flutter.dart';
+
+///Project imports
+import 'package:hms_room_kit/src/layout_api/hms_room_layout.dart';
+import 'package:hms_room_kit/src/layout_api/hms_theme_colors.dart';
 import 'package:hms_room_kit/src/common/constants.dart';
 import 'package:hms_room_kit/src/common/utility_functions.dart';
 import 'package:hms_room_kit/src/hmssdk_interactor.dart';
@@ -35,6 +40,8 @@ class PreviewStore extends ChangeNotifier
   bool isRoomJoinedAndHLSStarted = false;
 
   bool isRoomJoined = false;
+
+  bool isMeetingJoined = false;
 
   bool isRTMPStreamingStarted = false;
 
@@ -70,8 +77,12 @@ class PreviewStore extends ChangeNotifier
     this.room = room;
     for (HMSPeer each in room.peers!) {
       if (each.isLocal) {
+        HMSRoomLayout.resetLayout(each.role.name);
+        notifyListeners();
         peer = each;
-        if (each.role.name.indexOf("hls-") == 0) {
+        if (HMSRoomLayout
+                .roleLayoutData?.screens?.conferencing?.hlsLiveStreaming !=
+            null) {
           isHLSLink = true;
         }
         if (!each.role.publishSettings!.allowed.contains("video")) {
@@ -143,6 +154,10 @@ class PreviewStore extends ChangeNotifier
           //This is only for 100ms internal testing, endPoint can be safely removed from
           //the HMSConfig for external usage
           endPoint: initEndPoint);
+      await HMSRoomLayout.getRoomLayout(
+        hmsSDKInteractor: hmsSDKInteractor,
+        authToken: tokenData,
+      );
       hmsSDKInteractor.startHMSLogger(
           Constant.webRTCLogLevel, Constant.sdkLogLevel);
       hmsSDKInteractor.addPreviewListener(this);
@@ -206,8 +221,11 @@ class PreviewStore extends ChangeNotifier
         break;
       case HMSRoomUpdate.hlsStreamingStateUpdated:
         isHLSStreamingStarted = room.hmshlsStreamingState?.running ?? false;
-        isRoomJoinedAndHLSStarted =
-            (room.hmshlsStreamingState?.running ?? false) && isRoomJoined;
+        if (!isMeetingJoined && isRoomJoined) {
+          isRoomJoinedAndHLSStarted =
+              (room.hmshlsStreamingState?.running ?? false) && isRoomJoined;
+          isMeetingJoined = true;
+        }
         break;
       case HMSRoomUpdate.roomPeerCountUpdated:
         peerCount = room.peerCount;
@@ -258,6 +276,7 @@ class PreviewStore extends ChangeNotifier
 
   void leave() {
     hmsSDKInteractor.leave();
+    HMSThemeColors.resetLayoutColors();
     hmsSDKInteractor.toggleAlwaysScreenOn();
     destroy();
   }
@@ -274,6 +293,7 @@ class PreviewStore extends ChangeNotifier
 
   void getRoles() async {
     roles = await hmsSDKInteractor.getRoles();
+    roles.removeWhere((element) => element.name == "__internal_recorder");
     notifyListeners();
   }
 

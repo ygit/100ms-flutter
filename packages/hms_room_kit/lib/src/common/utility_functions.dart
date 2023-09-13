@@ -6,17 +6,18 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hms_room_kit/hms_room_kit.dart';
 import 'package:hmssdk_flutter/hmssdk_flutter.dart';
 import 'package:hms_room_kit/src/common/animated_text.dart';
-import 'package:hms_room_kit/src/common/app_color.dart';
-import 'package:hms_room_kit/src/common/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+///This class contains the utility functions used in the app
 class Utilities {
   static RegExp regexEmoji = RegExp(
       r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])');
 
+  ///This function is used to get the avatar title
   static String getAvatarTitle(String name) {
     if (name.isEmpty) {
       return "👤";
@@ -41,17 +42,18 @@ class Utilities {
     return name.toUpperCase();
   }
 
+  ///This function is used to get the avatar background colour
   static Color getBackgroundColour(String name) {
     if (name.isEmpty) {
-      return colors[0];
+      return avatarColors[0];
     }
     if (name.contains(regexEmoji)) {
       name = name.replaceAll(regexEmoji, '');
       if (name.trim().isEmpty) {
-        return colors[0];
+        return avatarColors[0];
       }
     }
-    return colors[name.toUpperCase().codeUnitAt(0) % colors.length];
+    return avatarColors[name.toUpperCase().codeUnitAt(0) % avatarColors.length];
   }
 
   /// List of alignments for timed metadata toasts
@@ -63,6 +65,7 @@ class Utilities {
     const Alignment(0.8, 0.5)
   ];
 
+  ///This function is used to get Aspect Ratio of the screen
   static double getRatio(Size size, BuildContext context) {
     EdgeInsets viewPadding = MediaQuery.of(context).viewPadding;
     return (size.height -
@@ -74,10 +77,12 @@ class Utilities {
         (size.width);
   }
 
+  ///This function is used to get HLS Player's Aspect Ratio for the screen
   static double getHLSRatio(Size size, BuildContext context) {
     return (size.height - 1) / (size.width);
   }
 
+  ///This function is used to get HLS Player's Default Aspect Ratio for the screen
   static double getHLSPlayerDefaultRatio(Size size) {
     if (Platform.isAndroid) {
       return size.width / (size.height - 100);
@@ -86,6 +91,7 @@ class Utilities {
     }
   }
 
+  ///This function is used to get the RTMP URL from the room link
   static void setRTMPUrl(String roomUrl) {
     if (roomUrl.contains("flutterhms.page.link") &&
         roomUrl.contains("meetingUrl")) {
@@ -99,6 +105,37 @@ class Utilities {
     Constant.streamingUrl = "${urlSplit.join('/')}?skip_preview=true";
   }
 
+  ///This function formats the number of peers
+  ///If the number of peers is greater than 1 million, we render the number in millions
+  ///If the number of peers is greater than 1 thousand, we render the number in thousands
+  ///else we render the number as it is
+  static String formatNumber(int number) {
+    if (number >= 1000000) {
+      double num = number / 1000000;
+      return '${num.toStringAsFixed(num.truncateToDouble() == num ? 0 : 1)}M';
+    } else if (number >= 1000) {
+      double num = number / 1000;
+      return '${num.toStringAsFixed(num.truncateToDouble() == num ? 0 : 1)}K';
+    } else {
+      return number.toString();
+    }
+  }
+
+  ///This contains the list of toasts possible colors
+  static final List<Color> _toastColors = [
+    HMSThemeColors.surfaceDim,
+    HMSThemeColors.surfaceDim.withOpacity(0.8),
+    HMSThemeColors.surfaceDim.withOpacity(0.6),
+  ];
+
+  ///This method returns the toast color based on the index and the number of toasts
+  static Color getToastColor(int index, int toastsCount) {
+    if (toastsCount == 1) return _toastColors[0];
+    if (toastsCount == 2) return _toastColors[1 - index];
+    return _toastColors[2 - index];
+  }
+
+  ///This function gets permissions for the camera,microphone and bluetooth headphones
   static Future<bool> getPermissions() async {
     ///We request the permissions for the camera,microphone and bluetooth
     await Permission.camera.request();
@@ -192,6 +229,7 @@ class Utilities {
     }
   }
 
+  ///This method is used to get names for the audio devices
   static String getAudioDeviceName(HMSAudioDevice? hmsAudioDevice) {
     switch (hmsAudioDevice) {
       case HMSAudioDevice.SPEAKER_PHONE:
@@ -207,6 +245,7 @@ class Utilities {
     }
   }
 
+  ///This method is used to get camera permissions
   static Future<bool> getCameraPermissions() async {
     if (Platform.isIOS) return true;
     await Permission.camera.request();

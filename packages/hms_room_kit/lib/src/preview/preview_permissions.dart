@@ -1,14 +1,19 @@
+///Dart imports
 import 'dart:io';
 
+///Package imports
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hms_room_kit/src/common/app_color.dart';
+
+///Project imports
 import 'package:hms_room_kit/src/common/utility_functions.dart';
 import 'package:hms_room_kit/src/hms_prebuilt_options.dart';
+import 'package:hms_room_kit/src/layout_api/hms_theme_colors.dart';
 import 'package:hms_room_kit/src/widgets/common_widgets/hms_subtitle_text.dart';
 import 'package:hms_room_kit/src/widgets/common_widgets/hms_title_text.dart';
 import 'package:hms_room_kit/src/widgets/hms_buttons/hms_back_button.dart';
 
+///This renders the preview permissions screen
 class PreviewPermissions extends StatefulWidget {
   final String roomCode;
   final HMSPrebuiltOptions? options;
@@ -25,6 +30,10 @@ class PreviewPermissions extends StatefulWidget {
 }
 
 class _PreviewPermissionsState extends State<PreviewPermissions> {
+  ///This function gets the permissions
+  ///If the permissions are granted then we call the callback provided
+  ///
+  ///For more details checkout the [Utilities.getPermissions] function
   void _getPermissions() async {
     var res = await Utilities.getPermissions();
 
@@ -52,17 +61,24 @@ class _PreviewPermissionsState extends State<PreviewPermissions> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SvgPicture.asset(
-                      "packages/hms_room_kit/lib/src/assets/icons/permission_lock.svg",
-                      fit: BoxFit.scaleDown,
-                      semanticsLabel: "audio_mute_button",
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: HMSThemeColors.surfaceDefault,
+                      child: SvgPicture.asset(
+                        "packages/hms_room_kit/lib/src/assets/icons/permission_lock.svg",
+                        height: 56,
+                        width: 56,
+                        colorFilter: ColorFilter.mode(
+                            HMSThemeColors.onSurfaceHighEmphasis,
+                            BlendMode.srcIn),
+                      ),
                     ),
                     const SizedBox(
                       height: 20,
                     ),
                     HMSTitleText(
                       text: "Enable permissions",
-                      textColor: onSurfaceHighEmphasis,
+                      textColor: HMSThemeColors.onSurfaceHighEmphasis,
                       fontSize: 24,
                       lineHeight: 32,
                     ),
@@ -73,7 +89,7 @@ class _PreviewPermissionsState extends State<PreviewPermissions> {
                         text: "Just a few things before you join",
                         fontSize: 14,
                         lineHeight: 20,
-                        textColor: onSurfaceLowEmphasis),
+                        textColor: HMSThemeColors.onSecondaryMediumEmphasis),
                   ],
                 ),
               ),
@@ -89,8 +105,8 @@ class _PreviewPermissionsState extends State<PreviewPermissions> {
                         _getPermissions();
                       },
                       style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(primaryDefault),
+                          backgroundColor: MaterialStatePropertyAll(
+                              HMSThemeColors.primaryDefault),
                           shape:
                               MaterialStateProperty.all<RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
@@ -99,7 +115,7 @@ class _PreviewPermissionsState extends State<PreviewPermissions> {
                         padding: const EdgeInsets.all(8.0),
                         child: HMSTitleText(
                             text: "Grant Permissions",
-                            textColor: onSurfaceHighEmphasis),
+                            textColor: HMSThemeColors.onPrimaryHighEmphasis),
                       ),
                     ),
                   ),

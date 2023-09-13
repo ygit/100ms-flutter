@@ -3,130 +3,150 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hms_room_kit/src/widgets/bottom_sheets/leave_session_bottom_sheet.dart';
+import 'package:hmssdk_flutter/hmssdk_flutter.dart';
+import 'package:collection/collection.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+//Project imports
 import 'package:hms_room_kit/src/common/app_color.dart';
 import 'package:hms_room_kit/src/common/constants.dart';
 import 'package:hms_room_kit/src/common/utility_functions.dart';
 import 'package:hms_room_kit/src/enums/meeting_mode.dart';
+import 'package:hms_room_kit/src/layout_api/hms_theme_colors.dart';
 import 'package:hms_room_kit/src/widgets/app_dialogs/role_change_request_dialog.dart';
 import 'package:hms_room_kit/src/widgets/app_dialogs/track_change_request_dialog.dart';
 import 'package:hms_room_kit/src/widgets/common_widgets/hms_dropdown.dart';
 import 'package:hms_room_kit/src/widgets/common_widgets/hms_subtitle_text.dart';
 import 'package:hms_room_kit/src/widgets/common_widgets/hms_title_text.dart';
 import 'package:hms_room_kit/src/meeting/meeting_store.dart';
-import 'package:provider/provider.dart';
+import 'package:hms_room_kit/src/widgets/toasts/hms_disconnected_toast.dart';
+import 'package:hms_room_kit/src/widgets/toasts/hms_reconnection_toast.dart';
 
-//Project imports
-import 'package:hmssdk_flutter/hmssdk_flutter.dart';
-import 'package:collection/collection.dart';
-
+///[UtilityComponents] contains the common components used in the app
 class UtilityComponents {
   static Future<dynamic> onBackPressed(BuildContext context) {
     MeetingStore meetingStore = context.read<MeetingStore>();
-    return showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        actionsPadding: const EdgeInsets.only(right: 10, left: 10, bottom: 10),
-        backgroundColor: const Color.fromRGBO(32, 22, 23, 1),
-        title: SizedBox(
-          width: 300,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SvgPicture.asset(
-                "packages/hms_room_kit/lib/src/assets/icons/end.svg",
-                width: 24,
-              ),
-              const SizedBox(
-                width: 5,
-              ),
-              Text(
-                'Do you wish to leave?',
-                style: GoogleFonts.inter(
-                    color: errorColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.25),
-              ),
-            ],
-          ),
-        ),
-        content: Text(
-            "You will leave the room immediately. You can’t undo this action.",
-            style: GoogleFonts.inter(
-                color: themeHintColor,
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                letterSpacing: 0.25)),
-        actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                    style: ButtonStyle(
-                        shadowColor:
-                            MaterialStateProperty.all(themeSurfaceColor),
-                        backgroundColor: MaterialStateProperty.all(
-                          const Color.fromRGBO(32, 22, 23, 1),
-                        ),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                          side: BorderSide(
-                              width: 1, color: popupButtonBorderColor),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ))),
-                    onPressed: () => Navigator.pop(context, false),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0, vertical: 12),
-                      child: Text('Nevermind',
-                          style: GoogleFonts.inter(
-                              color: hmsWhiteColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.50)),
-                    )),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                      shadowColor: MaterialStateProperty.all(themeSurfaceColor),
-                      backgroundColor: MaterialStateProperty.all(errorColor),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                        side: BorderSide(width: 1, color: errorColor),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ))),
-                  onPressed: () => {
-                    meetingStore.leave(),
-                    Navigator.popUntil(context, (route) => route.isFirst)
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0, vertical: 12),
-                    child: Text(
-                      'Leave Room',
-                      style: GoogleFonts.inter(
-                          color: themeDefaultColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.50),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          )
-        ],
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      backgroundColor: HMSThemeColors.surfaceDim,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16), topRight: Radius.circular(16)),
       ),
+      context: context,
+      builder: (ctx) => ChangeNotifierProvider.value(
+          value: context.read<MeetingStore>(),
+          child: LeaveSessionBottomSheet(
+            meetingStore: meetingStore,
+          )),
     );
+
+    // showDialog(
+    //   context: context,
+    //   builder: (ctx) => AlertDialog(
+    //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    //     insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+    //     actionsPadding: const EdgeInsets.only(right: 10, left: 10, bottom: 10),
+    //     backgroundColor: const Color.fromRGBO(32, 22, 23, 1),
+    //     title: SizedBox(
+    //       width: 300,
+    //       child: Row(
+    //         mainAxisSize: MainAxisSize.min,
+    //         children: [
+    //           SvgPicture.asset(
+    //             "packages/hms_room_kit/lib/src/assets/icons/end.svg",
+    //             width: 24,
+    //           ),
+    //           const SizedBox(
+    //             width: 5,
+    //           ),
+    //           Text(
+    //             'Do you wish to leave?',
+    //             style: GoogleFonts.inter(
+    //                 color: errorColor,
+    //                 fontSize: 20,
+    //                 fontWeight: FontWeight.w600,
+    //                 letterSpacing: 0.25),
+    //           ),
+    //         ],
+    //       ),
+    //     ),
+    //     content: Text(
+    //         "You will leave the room immediately. You can’t undo this action.",
+    //         style: GoogleFonts.inter(
+    //             color: themeHintColor,
+    //             fontSize: 14,
+    //             fontWeight: FontWeight.w400,
+    //             letterSpacing: 0.25)),
+    //     actions: [
+    //       Row(
+    //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    //         children: [
+    //           Expanded(
+    //             child: ElevatedButton(
+    //                 style: ButtonStyle(
+    //                     shadowColor:
+    //                         MaterialStateProperty.all(themeSurfaceColor),
+    //                     backgroundColor: MaterialStateProperty.all(
+    //                       const Color.fromRGBO(32, 22, 23, 1),
+    //                     ),
+    //                     shape:
+    //                         MaterialStateProperty.all<RoundedRectangleBorder>(
+    //                             RoundedRectangleBorder(
+    //                       side: BorderSide(
+    //                           width: 1, color: popupButtonBorderColor),
+    //                       borderRadius: BorderRadius.circular(8.0),
+    //                     ))),
+    //                 onPressed: () => Navigator.pop(context, false),
+    //                 child: Padding(
+    //                   padding: const EdgeInsets.symmetric(
+    //                       horizontal: 8.0, vertical: 12),
+    //                   child: Text('Nevermind',
+    //                       style: GoogleFonts.inter(
+    //                           color: hmsWhiteColor,
+    //                           fontSize: 16,
+    //                           fontWeight: FontWeight.w600,
+    //                           letterSpacing: 0.50)),
+    //                 )),
+    //           ),
+    //           const SizedBox(
+    //             width: 10,
+    //           ),
+    //           Expanded(
+    //             child: ElevatedButton(
+    //               style: ButtonStyle(
+    //                   shadowColor: MaterialStateProperty.all(themeSurfaceColor),
+    //                   backgroundColor: MaterialStateProperty.all(errorColor),
+    //                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+    //                       RoundedRectangleBorder(
+    //                     side: BorderSide(width: 1, color: errorColor),
+    //                     borderRadius: BorderRadius.circular(8.0),
+    //                   ))),
+    //               onPressed: () => {
+    //                 meetingStore.leave(),
+    //                 Navigator.popUntil(context, (route) => route.isFirst)
+    //               },
+    //               child: Padding(
+    //                 padding: const EdgeInsets.symmetric(
+    //                     horizontal: 8.0, vertical: 12),
+    //                 child: Text(
+    //                   'Leave Room',
+    //                   style: GoogleFonts.inter(
+    //                       color: themeDefaultColor,
+    //                       fontSize: 16,
+    //                       fontWeight: FontWeight.w600,
+    //                       letterSpacing: 0.50),
+    //                 ),
+    //               ),
+    //             ),
+    //           ),
+    //         ],
+    //       )
+    //     ],
+    //   ),
+    // );
   }
 
   static Future<dynamic> onLeaveStudio(BuildContext context) {
@@ -988,134 +1008,87 @@ class UtilityComponents {
     );
   }
 
-  static Future<bool> showErrorDialog(
-      {required BuildContext context,
-      required String errorMessage,
-      required String errorTitle,
-      required String actionMessage,
-      required Function() action}) async {
-    bool? res = await showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return WillPopScope(
-            onWillPop: () async => false,
-            child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              insetPadding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              backgroundColor: themeBottomSheetColor,
-              title: Center(
-                child: Text(
-                  errorTitle,
-                  style: GoogleFonts.inter(
-                      color: Colors.red.shade300,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
-              content: Text(errorMessage,
-                  style: GoogleFonts.inter(
-                      color: themeDefaultColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400)),
-              actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                        style: ButtonStyle(
-                            shadowColor:
-                                MaterialStateProperty.all(themeSurfaceColor),
-                            backgroundColor:
-                                MaterialStateProperty.all(hmsdefaultColor),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(RoundedRectangleBorder(
-                              side:
-                                  BorderSide(width: 1, color: hmsdefaultColor),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ))),
-                        onPressed: action,
-                        child: Text(
-                          actionMessage,
-                          style: GoogleFonts.inter(),
-                        )),
-                  ],
-                )
-              ],
-            ),
-          );
-        });
-    return res ?? false;
+  // static Future<bool> showErrorDialog(
+  //     {required BuildContext context,
+  //     required String errorMessage,
+  //     required String errorTitle,
+  //     required String actionMessage,
+  //     required Function() action}) async {
+  //   bool? res = await showDialog(
+  //       barrierDismissible: false,
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return WillPopScope(
+  //           onWillPop: () async => false,
+  //           child: AlertDialog(
+  //             shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(12)),
+  //             insetPadding:
+  //                 const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+  //             backgroundColor: HMSThemeColors.backgroundDefault,
+  //             title: Center(
+  //               child: Text(
+  //                 errorTitle,
+  //                 style: GoogleFonts.inter(
+  //                     color: HMSThemeColors.alertErrorDefault,
+  //                     fontSize: 16,
+  //                     fontWeight: FontWeight.w600),
+  //               ),
+  //             ),
+  //             content: Text(errorMessage,
+  //                 style: GoogleFonts.inter(
+  //                     color: HMSThemeColors.onSurfaceHighEmphasis,
+  //                     fontSize: 14,
+  //                     fontWeight: FontWeight.w400)),
+  //             actions: [
+  //               Row(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: [
+  //                   ElevatedButton(
+  //                       style: ButtonStyle(
+  //                           shadowColor: MaterialStateProperty.all(
+  //                               HMSThemeColors.backgroundDefault),
+  //                           backgroundColor: MaterialStateProperty.all(
+  //                               HMSThemeColors.primaryDefault),
+  //                           shape: MaterialStateProperty.all<
+  //                               RoundedRectangleBorder>(RoundedRectangleBorder(
+  //                             side: BorderSide(
+  //                                 width: 1,
+  //                                 color: HMSThemeColors.primaryDefault),
+  //                             borderRadius: BorderRadius.circular(8.0),
+  //                           ))),
+  //                       onPressed: action,
+  //                       child: Text(
+  //                         actionMessage,
+  //                         style: GoogleFonts.inter(),
+  //                       )),
+  //                 ],
+  //               )
+  //             ],
+  //           ),
+  //         );
+  //       });
+  //   return res ?? false;
+  // }
+
+  static Widget showReconnectingDialog(BuildContext context) {
+    return Container(
+        height: MediaQuery.of(context).size.height,
+        color: HMSThemeColors.backgroundDefault.withOpacity(0.5),
+        child: const HMSReconnectionToast());
   }
 
-  static Widget showReconnectingDialog(BuildContext context,
-      {String alertMessage = "Leave Room"}) {
+  ///This returns the error toasts whenever the error is terminal
+  static Widget showFailureError(
+      HMSException exception, BuildContext context, Function onLeavePressed) {
     return Container(
-      height: MediaQuery.of(context).size.height,
-      color: Colors.black.withOpacity(0.5),
-      child: Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
-            color: themeBottomSheetColor,
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black,
-                offset: Offset(0.0, 1.0),
-                blurRadius: 6.0,
-              ),
-            ],
-          ),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(
-              "Reconnecting...",
-              style: GoogleFonts.inter(
-                  color: Colors.red.shade300,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            LinearProgressIndicator(
-              color: hmsdefaultColor,
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Text('Oops, No internet Connection.\nReconnecting...',
-                style: GoogleFonts.inter(
-                    color: themeDefaultColor,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400)),
-            const SizedBox(
-              height: 15,
-            ),
-            ElevatedButton(
-                style: ButtonStyle(
-                    shadowColor: MaterialStateProperty.all(themeSurfaceColor),
-                    backgroundColor: MaterialStateProperty.all(hmsdefaultColor),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                      side: BorderSide(width: 1, color: hmsdefaultColor),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ))),
-                child: Text(
-                  alertMessage,
-                  style: GoogleFonts.inter(),
-                ),
-                onPressed: () {
-                  context.read<MeetingStore>().leave();
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                })
-          ]),
-        ),
-      ),
-    );
+        height: MediaQuery.of(context).size.height,
+        color: HMSThemeColors.backgroundDefault.withOpacity(0.5),
+        child: HMSDisconnectedToast(
+          errorDescription:
+              "CODE: ${exception.code?.errorCode}, ${exception.message}",
+          onLeavePressed: onLeavePressed,
+        ));
   }
 
   static onEndStream(
@@ -1262,7 +1235,8 @@ class UtilityComponents {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
-                    style: TextStyle(color: onSurfaceHighEmphasis),
+                    style:
+                        TextStyle(color: HMSThemeColors.onSurfaceHighEmphasis),
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (value) => (textController.text == "")
